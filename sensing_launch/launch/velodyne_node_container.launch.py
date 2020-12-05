@@ -40,6 +40,8 @@ def generate_launch_description():
     add_launch_arg('device_ip', '192.168.1.201')
     add_launch_arg('sensor_frame', 'velodyne')
     add_launch_arg('base_frame', 'base_link')
+    add_launch_arg('input_frame', LaunchConfiguration('base_frame'))
+    add_launch_arg('output_frame', LaunchConfiguration('base_frame'))
     add_launch_arg('container_name', 'velodyne_composable_node_container')
     add_launch_arg('min_range')
     add_launch_arg('max_range')
@@ -53,6 +55,7 @@ def generate_launch_description():
     add_launch_arg('laserscan_resolution', '0.007')
     add_launch_arg('num_points_thresholds', '300')
     add_launch_arg('invalid_intensity')
+
 
     def create_parameter_dict(*args):
         result = {}
@@ -68,22 +71,25 @@ def generate_launch_description():
         package='velodyne_pointcloud',
         plugin='velodyne_pointcloud::Convert',
         name='velodyne_convert_node',
-        parameters=[create_parameter_dict('velodyne_points', 'velodyne_points_ex', 'calibration',
+        parameters=[
+            create_parameter_dict('calibration',
                                           'min_range', 'max_range', 'num_points_thresholds',
-                                          'invalid_intensity')]
-    )
+                                          'invalid_intensity')],
+        remappings=[('velodyne_points', 'pointcloud_raw'), 
+                    ('velodyne_points_ex', 'pointcloud_raw_ex')]
+        )
     )
 
     cropbox_parameters = create_parameter_dict('input_frame', 'output_frame')
     cropbox_parameters['negative'] = True
 
     cropbox_remappings = [
-        ('/min_x', '/vehicle_info/min_longitudinal_offset'),
-        ('/max_x', '/vehicle_info/max_longitudinal_offset'),
-        ('/min_z', '/vehicle_info/min_lateral_offset'),
-        ('/max_z', '/vehicle_info/max_lateral_offset'),
-        ('/min_z', '/vehicle_info/min_height_offset'),
-        ('/max_z', '/vehicle_info/max_height_offset'),
+        ('min_x', 'vehicle_info/min_longitudinal_offset'),
+        ('max_x', 'vehicle_info/max_longitudinal_offset'),
+        ('min_z', 'vehicle_info/min_lateral_offset'),
+        ('max_z', 'vehicle_info/max_lateral_offset'),
+        ('min_z', 'vehicle_info/min_height_offset'),
+        ('max_z', 'vehicle_info/max_height_offset'),
     ]
 
     nodes.append(ComposableNode(
@@ -97,41 +103,41 @@ def generate_launch_description():
     )
     )
 
-    nodes.append(ComposableNode(
-        package='pointcloud_preprocessor',
-        plugin='pointcloud_preprocessor::CropBoxFilterComponent',
-        name='crop_box_filter_mirror',
-        remappings=[('/input', 'self_cropped/pointcloud_ex'),
-                    ('/output', 'mirror_cropped/pointcloud_ex'),
-                    ] + cropbox_remappings,
-        parameters=[cropbox_parameters],
-    )
-    )
+    # nodes.append(ComposableNode(
+    #     package='pointcloud_preprocessor',
+    #     plugin='pointcloud_preprocessor::CropBoxFilterComponent',
+    #     name='crop_box_filter_mirror',
+    #     remappings=[('/input', 'self_cropped/pointcloud_ex'),
+    #                 ('/output', 'mirror_cropped/pointcloud_ex'),
+    #                 ] + cropbox_remappings,
+    #     parameters=[cropbox_parameters],
+    # )
+    # )
 
-    # TODO(fred-apex-ai) Still need the distortion component
-    if False:
-        nodes.append(ComposableNode(
-            package='TODO',
-            plugin='TODO',
-            name='fix_distortion',
-            remappings=[
-                ('velodyne_points_ex', 'mirror_cropped/pointcloud_ex'),
-                ('velodyne_points_interpolate', 'rectified/pointcloud'),
-                ('velodyne_points_interpolate_ex', 'rectified/pointcloud_ex'),
-            ],
-        )
-        )
+    # # TODO(fred-apex-ai) Still need the distortion component
+    # if False:
+    #     nodes.append(ComposableNode(
+    #         package='TODO',
+    #         plugin='TODO',
+    #         name='fix_distortion',
+    #         remappings=[
+    #             ('velodyne_points_ex', 'mirror_cropped/pointcloud_ex'),
+    #             ('velodyne_points_interpolate', 'rectified/pointcloud'),
+    #             ('velodyne_points_interpolate_ex', 'rectified/pointcloud_ex'),
+    #         ],
+    #     )
+    #     )
 
-    nodes.append(ComposableNode(
-        package='pointcloud_preprocessor',
-        plugin='pointcloud_preprocessor::RingOutlierFilterComponent',
-        name='ring_outlier_filter',
-        remappings=[
-            ('/input', 'rectified/pointcloud_ex'),
-            ('/output', 'outlier_filtered/pointcloud')
-        ],
-    )
-    )
+    # nodes.append(ComposableNode(
+    #     package='pointcloud_preprocessor',
+    #     plugin='pointcloud_preprocessor::RingOutlierFilterComponent',
+    #     name='ring_outlier_filter',
+    #     remappings=[
+    #         ('/input', 'rectified/pointcloud_ex'),
+    #         ('/output', 'outlier_filtered/pointcloud')
+    #     ],
+    # )
+    # )
 
     # set container to run all required components in the same process
     container = ComposableNodeContainer(
@@ -145,11 +151,24 @@ def generate_launch_description():
 
     driver_component = ComposableNode(
         package='velodyne_driver',
-        plugin='velodyne_driver::VelodyneDriver',
+        plugin='velodyne_driver::DriverNodelet',
         # node is created in a global context, need to avoid name clash
         name='velodyne_driver',
-        parameters=[create_parameter_dict('device_ip', 'frame_id', 'model', 'pcap', 'port',
-                                          'read_fast', 'read_once', 'repeat_delay', 'rpm')],
+        parameters=[{
+            "device_ip": "192.168.1.201",
+            "gps_time": False,
+            "time_offset": 0.0,
+            "enabled": True,
+            "read_once": False,
+            "read_fast": False,
+            "repeat_delay": 0.0,
+            "frame_id": "velodyne",
+            "model": "32C",
+            "rpm": 600.0,
+            "port": 2368,
+        }]
+        # create_parameter_dict('device_ip', 'frame_id', 'model', 'pcap', 'port',
+        #                                   'read_fast', 'read_once', 'repeat_delay', 'rpm')],
     )
 
     # one way to add a ComposableNode conditional on a launch argument to a
