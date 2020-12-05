@@ -36,7 +36,7 @@ def generate_launch_description():
 
     add_launch_arg('model')
     add_launch_arg('launch_driver', 'True')
-    add_launch_arg('calibration')
+    add_launch_arg('calibration', "/home/autoware/workspace/AutowareArchitectureProposal/src/vendor/velodyne_vls/velodyne_pointcloud/params/VeloView-VLP-32C.yaml")
     add_launch_arg('device_ip', '192.168.1.201')
     add_launch_arg('sensor_frame', 'velodyne')
     add_launch_arg('base_frame', 'base_link')
