@@ -11,9 +11,9 @@
   <arg name="pointcloud_map_file" default="pointcloud_map.pcd" />
   <!-- Optional parameters for scenario simulation -->
   <arg name="initial_engage_state" default="true"/>
-  <arg name="perception/enable_detection_failure" default="true"/>
-  <arg name="perception/enable_object_recognition" default="true"/>
-  <arg name="sensing/visible_range" default="300"/>
+  <arg name="perception/enable_detection_failure" default="false"/>
+  <arg name="perception/enable_object_recognition" default="false"/>
+  <arg name="sensing/visible_range" default="300.0"/>
 
   <!-- Vehicle -->
   <include file="$(find-pkg-share vehicle_launch)/launch/vehicle.launch.xml">

@@ -13,8 +13,8 @@
     <!-- motion planning module -->
     <group>
       <push-ros-namespace namespace="motion_planning"/>
-      <!-- <include file="$(find-pkg-share planning_launch)/launch/scenario_planning/lane_driving/motion_planning/motion_planning.launch.xml">
-      </include> -->
+      <include file="$(find-pkg-share planning_launch)/launch/scenario_planning/lane_driving/motion_planning/motion_planning.launch.xml">
+      </include>
     </group>
   </group>
 </launch>
