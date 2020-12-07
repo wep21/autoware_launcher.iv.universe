@@ -35,11 +35,9 @@
   <node pkg="pointcloud_preprocessor" exec="downsample_filter_node" name="voxel_grid_filter" output="log">
     <remap from="input" to="$(var output_mesurement_range_sensor_points_topic)" />
     <remap from="output" to="$(var output_downsample_sensor_points_topic)" />
-    <rosparam>
-      voxel_size_x: 3.0
-      voxel_size_y: 3.0
-      voxel_size_z: 3.0
-    </rosparam>
+    <param name="voxel_size_x" value="3.0"/>
+    <param name="voxel_size_y" value="3.0"/>
+    <param name="voxel_size_z" value="3.0"/>
   </node>
 
 </launch>
