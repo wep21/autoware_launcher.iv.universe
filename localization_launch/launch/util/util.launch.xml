@@ -17,15 +17,15 @@
   <node pkg="pointcloud_preprocessor" exec="crop_box_filter_node" name="crop_box_filter_mesurement_range" output="log">
     <remap from="input" to="$(var input_sensor_points_topic)" />
     <remap from="output" to="$(var output_mesurement_range_sensor_points_topic)" />
-    <rosparam>
-        min_x: -60.0
-        max_x: 60.0
-        min_y: -60.0
-        max_y: 60.0
-        min_z: -30.0
-        max_z: 50.0
-        negative: False
-    </rosparam>
+    
+    <param name="min_x" value="-60.0"/>
+    <param name="max_x" value="60.0"/>
+    <param name="min_y" value="-60.0"/>
+    <param name="max_y" value="60.0"/>
+    <param name="min_z" value="-30.0"/>
+    <param name="max_z" value="50.0"/>
+    <param name="negative" value="False"/>
+
     <param name="input_frame" value="$(var base_frame)" />
     <param name="output_frame" value="$(var base_frame)" />
   </node>
