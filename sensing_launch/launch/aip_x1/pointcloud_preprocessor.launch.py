@@ -23,20 +23,20 @@ def generate_launch_description():
   pkg = 'pointcloud_preprocessor'
 
   # set concat filter as a component
-  concat_component = ComposableNode(
-      package=pkg,
-      plugin='pointcloud_preprocessor::PointCloudConcatenateDataSynchronizerComponent',
-      name='concatenate_data',
-      remappings=[('/output', 'concatenated/pointcloud')],
-      parameters=[
-          {
-              'input_topics': ['/sensing/lidar/top/outlier_filtered/pointcloud',
-                               '/sensing/lidar/left/outlier_filtered/pointcloud',
-                               '/sensing/lidar/right/outlier_filtered/pointcloud'],
-              'output_frame': 'base_link',
-          }
-      ]
-  )
+#   concat_component = ComposableNode(
+#       package=pkg,
+#       plugin='pointcloud_preprocessor::PointCloudConcatenateDataSynchronizerComponent',
+#       name='concatenate_data',
+#       remappings=[('output', 'concatenated/pointcloud')],
+#       parameters=[
+#           {
+#               'input_topics': ['/sensing/lidar/top/outlier_filtered/pointcloud',
+#                                '/sensing/lidar/left/outlier_filtered/pointcloud',
+#                                '/sensing/lidar/right/outlier_filtered/pointcloud'],
+#               'output_frame': 'base_link',
+#           }
+#       ]
+#   )
 
   # set crop box filter as a component
   cropbox_component = ComposableNode(
@@ -44,8 +44,8 @@ def generate_launch_description():
       plugin='pointcloud_preprocessor::CropBoxFilterComponent',
       name='crop_box_filter',
       remappings=[
-          ('/input', 'concatenated/pointcloud'),
-          ('/output', "mesurement_range_cropped/pointcloud"),
+          ('input', 'sensing/lidar/top/outlier_filtered/pointcloud'),
+          ('output', "mesurement_range_cropped/pointcloud"),
           ('/min_z', '/vehicle_info/min_height_offset'),
           ('/max_z', '/vehicle_info/max_height_offset'),
       ],
@@ -67,8 +67,8 @@ def generate_launch_description():
       plugin='pointcloud_preprocessor::RayGroundFilterComponent',
       name='ray_ground_filter',
       remappings=[
-          ('/input', 'mesurement_range_cropped/pointcloud'),
-          ('/output', 'no_ground/pointcloud')
+          ('input', 'mesurement_range_cropped/pointcloud'),
+          ('output', 'no_ground/pointcloud')
       ],
       parameters=[{
         "general_max_slope": 10.0,
@@ -95,7 +95,7 @@ def generate_launch_description():
       package='rclcpp_components',
       executable='component_container',
       composable_node_descriptions=[
-          concat_component,
+        #   concat_component,
           cropbox_component,
           ground_component,
           relay_component,

@@ -35,7 +35,7 @@
       </include>
     </group> -->
 
-    <!-- <include file="$(find-pkg-share sensing_launch)/launch/aip_x1/pointcloud_preprocessor.launch.py"/> -->
+    <include file="$(find-pkg-share sensing_launch)/launch/aip_x1/pointcloud_preprocessor.launch.py"/>
 
   </group>
 </launch>

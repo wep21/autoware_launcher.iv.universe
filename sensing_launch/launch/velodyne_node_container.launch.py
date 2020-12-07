@@ -36,9 +36,9 @@ def generate_launch_description():
 
     add_launch_arg('model')
     add_launch_arg('launch_driver', 'True')
-    add_launch_arg('calibration', "/home/autoware/workspace/AutowareArchitectureProposal/src/vendor/velodyne_vls/velodyne_pointcloud/params/VeloView-VLP-32C.yaml")
+    add_launch_arg('calibration', "/home/autoware/workspace/AutowareArchitectureProposal/src/vendor/velodyne/velodyne_pointcloud/params/VeloView-VLP-32C.yaml")
     add_launch_arg('device_ip', '192.168.1.201')
-    add_launch_arg('sensor_frame', 'velodyne')
+    add_launch_arg('sensor_frame', 'velodyne_top')
     add_launch_arg('base_frame', 'base_link')
     add_launch_arg('input_frame', LaunchConfiguration('base_frame'))
     add_launch_arg('output_frame', LaunchConfiguration('base_frame'))
@@ -74,7 +74,7 @@ def generate_launch_description():
         parameters=[
             create_parameter_dict('calibration',
                                           'min_range', 'max_range', 'num_points_thresholds',
-                                          'invalid_intensity')],
+                                          'invalid_intensity', 'sensor_frame')],
         remappings=[('velodyne_points', 'pointcloud_raw'), 
                     ('velodyne_points_ex', 'pointcloud_raw_ex')]
         )
@@ -96,48 +96,48 @@ def generate_launch_description():
         package='pointcloud_preprocessor',
         plugin='pointcloud_preprocessor::CropBoxFilterComponent',
         name='crop_box_filter_self',
-        remappings=[('/input', 'pointcloud_raw_ex'),
-                    ('/output', 'self_cropped/pointcloud_ex')
+        remappings=[('input', 'pointcloud_raw_ex'),
+                    ('output', 'self_cropped/pointcloud_ex')
                     ] + cropbox_remappings,
         parameters=[cropbox_parameters],
     )
     )
 
-    # nodes.append(ComposableNode(
-    #     package='pointcloud_preprocessor',
-    #     plugin='pointcloud_preprocessor::CropBoxFilterComponent',
-    #     name='crop_box_filter_mirror',
-    #     remappings=[('/input', 'self_cropped/pointcloud_ex'),
-    #                 ('/output', 'mirror_cropped/pointcloud_ex'),
-    #                 ] + cropbox_remappings,
-    #     parameters=[cropbox_parameters],
-    # )
-    # )
+    nodes.append(ComposableNode(
+        package='pointcloud_preprocessor',
+        plugin='pointcloud_preprocessor::CropBoxFilterComponent',
+        name='crop_box_filter_mirror',
+        remappings=[('input', 'self_cropped/pointcloud_ex'),
+                    ('output', 'mirror_cropped/pointcloud_ex'),
+                    ] + cropbox_remappings,
+        parameters=[cropbox_parameters],
+    )
+    )
 
     # # TODO(fred-apex-ai) Still need the distortion component
     # if False:
-    #     nodes.append(ComposableNode(
-    #         package='TODO',
-    #         plugin='TODO',
-    #         name='fix_distortion',
-    #         remappings=[
-    #             ('velodyne_points_ex', 'mirror_cropped/pointcloud_ex'),
-    #             ('velodyne_points_interpolate', 'rectified/pointcloud'),
-    #             ('velodyne_points_interpolate_ex', 'rectified/pointcloud_ex'),
-    #         ],
-    #     )
-    #     )
-
     # nodes.append(ComposableNode(
-    #     package='pointcloud_preprocessor',
-    #     plugin='pointcloud_preprocessor::RingOutlierFilterComponent',
-    #     name='ring_outlier_filter',
+    #     package='velodyne_pointcloud',
+    #     plugin='velodyne_pointcloud::Interpolate',
+    #     name='fix_distortion',
     #     remappings=[
-    #         ('/input', 'rectified/pointcloud_ex'),
-    #         ('/output', 'outlier_filtered/pointcloud')
+    #         ('velodyne_points_ex', 'mirror_cropped/pointcloud_ex'),
+    #         ('velodyne_points_interpolate', 'rectified/pointcloud'),
+    #         ('velodyne_points_interpolate_ex', 'rectified/pointcloud_ex'),
     #     ],
     # )
     # )
+
+    nodes.append(ComposableNode(
+        package='pointcloud_preprocessor',
+        plugin='pointcloud_preprocessor::RingOutlierFilterComponent',
+        name='ring_outlier_filter',
+        remappings=[
+            ('input', 'rectified/pointcloud_ex'),
+            ('output', 'outlier_filtered/pointcloud')
+        ],
+    )
+    )
 
     # set container to run all required components in the same process
     container = ComposableNodeContainer(
@@ -162,7 +162,7 @@ def generate_launch_description():
             "read_once": False,
             "read_fast": False,
             "repeat_delay": 0.0,
-            "frame_id": "velodyne",
+            "frame_id": "velodyne_top",
             "model": "32C",
             "rpm": 600.0,
             "port": 2368,
