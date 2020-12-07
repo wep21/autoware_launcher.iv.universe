@@ -92,27 +92,27 @@ def generate_launch_description():
         ('max_z', 'vehicle_info/max_height_offset'),
     ]
 
-    nodes.append(ComposableNode(
-        package='pointcloud_preprocessor',
-        plugin='pointcloud_preprocessor::CropBoxFilterComponent',
-        name='crop_box_filter_self',
-        remappings=[('input', 'pointcloud_raw_ex'),
-                    ('output', 'self_cropped/pointcloud_ex')
-                    ] + cropbox_remappings,
-        parameters=[cropbox_parameters],
-    )
-    )
+    # nodes.append(ComposableNode(
+    #     package='pointcloud_preprocessor',
+    #     plugin='pointcloud_preprocessor::CropBoxFilterComponent',
+    #     name='crop_box_filter_self',
+    #     remappings=[('input', 'pointcloud_raw_ex'),
+    #                 ('output', 'self_cropped/pointcloud_ex')
+    #                 ] + cropbox_remappings,
+    #     parameters=[cropbox_parameters],
+    # )
+    # )
 
-    nodes.append(ComposableNode(
-        package='pointcloud_preprocessor',
-        plugin='pointcloud_preprocessor::CropBoxFilterComponent',
-        name='crop_box_filter_mirror',
-        remappings=[('input', 'self_cropped/pointcloud_ex'),
-                    ('output', 'mirror_cropped/pointcloud_ex'),
-                    ] + cropbox_remappings,
-        parameters=[cropbox_parameters],
-    )
-    )
+    # nodes.append(ComposableNode(
+    #     package='pointcloud_preprocessor',
+    #     plugin='pointcloud_preprocessor::CropBoxFilterComponent',
+    #     name='crop_box_filter_mirror',
+    #     remappings=[('input', 'self_cropped/pointcloud_ex'),
+    #                 ('output', 'mirror_cropped/pointcloud_ex'),
+    #                 ] + cropbox_remappings,
+    #     parameters=[cropbox_parameters],
+    # )
+    # )
 
     # # TODO(fred-apex-ai) Still need the distortion component
     # if False:
@@ -128,16 +128,16 @@ def generate_launch_description():
     # )
     # )
 
-    nodes.append(ComposableNode(
-        package='pointcloud_preprocessor',
-        plugin='pointcloud_preprocessor::RingOutlierFilterComponent',
-        name='ring_outlier_filter',
-        remappings=[
-            ('input', 'rectified/pointcloud_ex'),
-            ('output', 'outlier_filtered/pointcloud')
-        ],
-    )
-    )
+    # nodes.append(ComposableNode(
+    #     package='pointcloud_preprocessor',
+    #     plugin='pointcloud_preprocessor::RingOutlierFilterComponent',
+    #     name='ring_outlier_filter',
+    #     remappings=[
+    #         ('input', 'rectified/pointcloud_ex'),
+    #         ('output', 'outlier_filtered/pointcloud')
+    #     ],
+    # )
+    # )
 
     # set container to run all required components in the same process
     container = ComposableNodeContainer(
@@ -151,7 +151,7 @@ def generate_launch_description():
 
     driver_component = ComposableNode(
         package='velodyne_driver',
-        plugin='velodyne_driver::DriverNodelet',
+        plugin='velodyne_driver::VelodyneDriver',
         # node is created in a global context, need to avoid name clash
         name='velodyne_driver',
         parameters=[{

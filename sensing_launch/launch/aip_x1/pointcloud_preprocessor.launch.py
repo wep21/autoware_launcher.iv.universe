@@ -44,7 +44,7 @@ def generate_launch_description():
       plugin='pointcloud_preprocessor::CropBoxFilterComponent',
       name='crop_box_filter',
       remappings=[
-          ('input', 'sensing/lidar/top/outlier_filtered/pointcloud'),
+          ('input', '/sensing/lidar/top/pointcloud_raw'),
           ('output', "mesurement_range_cropped/pointcloud"),
           ('/min_z', '/vehicle_info/min_height_offset'),
           ('/max_z', '/vehicle_info/max_height_offset'),
@@ -82,7 +82,7 @@ def generate_launch_description():
       plugin='topic_tools::RelayNode',
       name='relay',
       parameters=[{
-        "input_topic": "/sensing/lidar/top/rectified/pointcloud",
+        "input_topic": "/sensing/lidar/top/pointcloud_raw",
         "output_topic": "/sensing/lidar/pointcloud",
         "type": "sensor_msgs/msg/PointCloud2",
       }],
