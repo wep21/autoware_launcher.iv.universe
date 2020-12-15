@@ -53,6 +53,10 @@ def generate_launch_description():
     add_launch_arg('laserscan_resolution', '0.007')
     add_launch_arg('num_points_thresholds', '300')
     add_launch_arg('invalid_intensity')
+    add_launch_arg('frame_id', 'velodyne')
+    add_launch_arg('gps_time', 'False')
+    add_launch_arg('input_frame', LaunchConfiguration('base_frame'))
+    add_launch_arg('output_frame', LaunchConfiguration('base_frame'))
 
     def create_parameter_dict(*args):
         result = {}
@@ -68,7 +72,7 @@ def generate_launch_description():
         package='velodyne_pointcloud',
         plugin='velodyne_pointcloud::Convert',
         name='velodyne_convert_node',
-        parameters=[create_parameter_dict('velodyne_points', 'velodyne_points_ex', 'calibration',
+        parameters=[create_parameter_dict('calibration',
                                           'min_range', 'max_range', 'num_points_thresholds',
                                           'invalid_intensity', 'sensor_frame')],
         remappings=[('velodyne_points', 'pointcloud_raw'),

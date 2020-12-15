@@ -7,7 +7,7 @@
   <arg name="calibration" default="$(find-pkg-share velodyne_pointcloud)/params/VeloView-VLP-32C.yaml"/>
   <arg name="max_range" default="200.0" />
   <arg name="min_range" default="0.4" />
-  <arg name="invalid_intensity" default="[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]"/>
+  <arg name="invalid_intensity" default="[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]"/>
 
   <include file="$(find-pkg-share sensing_launch)/launch/velodyne_node_container.launch.py">
     <arg name="launch_driver" value="$(var launch_driver)"/>
