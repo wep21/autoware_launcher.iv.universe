@@ -53,7 +53,7 @@ def generate_launch_description():
     add_launch_arg('laserscan_resolution', '0.007')
     add_launch_arg('num_points_thresholds', '300')
     add_launch_arg('invalid_intensity')
-    add_launch_arg('frame_id', 'velodyne')
+    add_launch_arg('frame_id', LaunchConfiguration('sensor_frame'))
     add_launch_arg('gps_time', 'False')
     add_launch_arg('input_frame', LaunchConfiguration('base_frame'))
     add_launch_arg('output_frame', LaunchConfiguration('base_frame'))
@@ -83,23 +83,23 @@ def generate_launch_description():
     cropbox_parameters = create_parameter_dict('input_frame', 'output_frame')
     cropbox_parameters['negative'] = True
 
-    cropbox_remappings = [
-        ('/min_x', '/vehicle_info/min_longitudinal_offset'),
-        ('/max_x', '/vehicle_info/max_longitudinal_offset'),
-        ('/min_z', '/vehicle_info/min_lateral_offset'),
-        ('/max_z', '/vehicle_info/max_lateral_offset'),
-        ('/min_z', '/vehicle_info/min_height_offset'),
-        ('/max_z', '/vehicle_info/max_height_offset'),
-    ]
+    cropbox_remappings = {
+        'min_x': -0.510,
+        'max_x': 2.14 + 0.467,
+        'min_y': -(0.975 / 2.0 + 0.145),
+        'max_y': 0.975 / 2.0 + 0.145,
+        'min_z': -0.255,
+        'max_z': 2.2,
+    }
 
     nodes.append(ComposableNode(
         package='pointcloud_preprocessor',
         plugin='pointcloud_preprocessor::CropBoxFilterComponent',
         name='crop_box_filter_self',
-        remappings=[('/input', 'pointcloud_raw_ex'),
-                    ('/output', 'self_cropped/pointcloud_ex')
-                    ] + cropbox_remappings,
-        parameters=[cropbox_parameters],
+        remappings=[('input', 'pointcloud_raw_ex'),
+                    ('output', 'self_cropped/pointcloud_ex')
+                    ],
+        parameters=[cropbox_parameters , cropbox_remappings] 
     )
     )
 
@@ -107,18 +107,18 @@ def generate_launch_description():
         package='pointcloud_preprocessor',
         plugin='pointcloud_preprocessor::CropBoxFilterComponent',
         name='crop_box_filter_mirror',
-        remappings=[('/input', 'self_cropped/pointcloud_ex'),
-                    ('/output', 'mirror_cropped/pointcloud_ex'),
-                    ] + cropbox_remappings,
-        parameters=[cropbox_parameters],
+        remappings=[('input', 'self_cropped/pointcloud_ex'),
+                    ('output', 'mirror_cropped/pointcloud_ex'),
+                    ],
+        parameters=[cropbox_parameters, cropbox_remappings] ,
     )
     )
 
     # TODO(fred-apex-ai) Still need the distortion component
-    if False:
+    if True:
         nodes.append(ComposableNode(
-            package='TODO',
-            plugin='TODO',
+            package='velodyne_pointcloud',
+            plugin='velodyne_pointcloud::Interpolate',
             name='fix_distortion',
             remappings=[
                 ('velodyne_points_ex', 'mirror_cropped/pointcloud_ex'),
@@ -133,8 +133,8 @@ def generate_launch_description():
         plugin='pointcloud_preprocessor::RingOutlierFilterComponent',
         name='ring_outlier_filter',
         remappings=[
-            ('/input', 'rectified/pointcloud_ex'),
-            ('/output', 'outlier_filtered/pointcloud')
+            ('input', 'rectified/pointcloud_ex'),
+            ('output', 'outlier_filtered/pointcloud')
         ],
     )
     )
