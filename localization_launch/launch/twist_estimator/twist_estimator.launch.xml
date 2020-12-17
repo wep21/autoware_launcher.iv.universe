@@ -1,7 +1,12 @@
 <?xml version="1.0"?>
 <launch>
-  <include file="$(find-pkg-share gyro_odometer)/launch/gyro_odometer.launch.xml">
+  <node pkg="topic_tools" exec="relay" name="twist_relay" output="log" >
+    <param name="input_topic" value="/vehicle/status/twist" />
+    <param name="output_topic" value="/localization/twist_estimator/twist" />
+    <param name="type" value="geometry_msgs/msg/TwistStamped" />
+  </node>
+  <!-- <include file="$(find-pkg-share gyro_odometer)/launch/gyro_odometer.launch.xml">
     <arg name="output_twist_topic" value="/localization/twist_estimator/twist" doc="" />
     <arg name="output_twist_with_covariance_topic" value="/localization/twist_estimator/twist_with_covariance" doc="" />
-  </include>
+  </include> -->
 </launch>
