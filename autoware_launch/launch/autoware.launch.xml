@@ -8,6 +8,10 @@
   <arg name="rviz" default="true" doc="launch rviz"/>
   <arg name="lanelet2_map_file" default="lanelet2_map.osm" />
   <arg name="pointcloud_map_file" default="pointcloud_map.pcd" />
+  <arg name="clock" default="true" />
+
+  <!-- clock for rosbag -->
+  <include file="$(find-pkg-share clock_publisher)/launch/clock_publisher.launch.xml" if="$(var clock)"/>
 
   <!-- Vehicle -->
   <include file="$(find-pkg-share vehicle_launch)/launch/vehicle.launch.xml">

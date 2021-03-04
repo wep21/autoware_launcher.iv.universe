@@ -19,6 +19,9 @@
   <exec_depend>system_launch</exec_depend>
   <exec_depend>vehicle_launch</exec_depend>
 
+  <!-- clock -->
+  <exec_depend>clock_publisher</exec_depend>
+
   <!-- vizualization -->
   <exec_depend>rviz2</exec_depend>
 
